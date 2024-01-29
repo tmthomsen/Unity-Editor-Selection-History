@@ -1,33 +1,14 @@
-# Editor History
-<a href="https://openupm.com/packages/com.bedtime.editor-history/">
-  <img src="https://img.shields.io/npm/v/com.bedtime.editor-history?label=openupm&amp;registry_uri=https://package.openupm.com" />
-</a>
+# Editor Selection History
+This is a fork of the excellent [Editor-History](https://github.com/BedtimeDigitalGames/Unity-Editor-History) by Bedtime Digital Games.
 
-A small tool with a huge workflow impact!
-With Editor History installed you can navigate back and forth through your selection history with the back/forward buttons on your mouse!
-The selection history can also be navigated through its own window by clicking the Editor History button in the Unity toolbar.
+Differences:
+- Unity-Toolbar-Extender is now an optional extension (handled via a asmdef Version Define).
+- Converted history back/forward keybinds to make use of Unity's editor shortcut system (defaults: Mouse3 / Mouse4)
+- Fixed history not saving between editor sessions.
 
-![image](https://user-images.githubusercontent.com/1178324/168482537-0880cd56-038d-44fc-8684-a7de92e6b830.png)
-
-By default this window acts as a modal that will close if you click away from it, but in the top right corner of the window you can pop it out into a seperate window that can be docked anywhere, should you want to keep it open permanently.
-
-# Installation
-Windows only for now. 
-Unity does not support reading Mouse4/Mouse5 in edit-mode, so this tool reads the mouse input through Win32 APIs instead.
-
-## Git + Unity Package Manager
+## Installation
 Add this URL to your Unity Package manager as a git package
+```https://github.com/tmthomsen/Unity-Editor-Selection-History.git```
 
-```https://github.com/BedtimeDigitalGames/Unity-Editor-History.git#1.2.1``` 
-
-![image](https://user-images.githubusercontent.com/104233613/164909451-0ca62c24-0106-463b-9c4b-e7fbcd6409ad.png)
-
-## OpenUPM
-```$ openupm add com.bedtime.editor-history```
-
-## UnityPackage
-[Download](https://github.com/BedtimeDigitalGames/Unity-Editor-History/releases/download/1.2.1/com.bedtime.editor-history.unitypackage)
-
-# How to use
- - Click back and forwards on your mouse to navigate through your selection history
- - Alternatively click the Editor History button (clock icon) in the top Unity toolbar to open a list of your selection history
+> [!NOTE]
+> If you want to make use of the history UI window, simply add [Unity-Toolbar-Extender](https://github.com/marijnz/unity-toolbar-extender) to your project, and the button will appear in the upper right corner of the editor.
