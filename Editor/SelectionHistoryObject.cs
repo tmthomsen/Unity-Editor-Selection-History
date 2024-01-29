@@ -5,113 +5,113 @@ using Object = UnityEngine.Object;
 
 namespace TMT.EditorSelectionHistory
 {
-	[Serializable]
-	internal struct SelectionHistoryObject
-	{
-		[SerializeField]
-		private Object _selection;
-		
-		[SerializeField]
-		private string _scenePath;
+    [Serializable]
+    internal struct SelectionHistoryObject
+    {
+        [SerializeField]
+        private Object _selection;
 
-		[SerializeField]
-		private string _scene;
-		
-		[SerializeField]
-		private string _name;
+        [SerializeField]
+        private string _scenePath;
 
-		[SerializeField]
-		private GUIContent _guiContent;
+        [SerializeField]
+        private string _scene;
 
-		[SerializeField]
-		private bool _isSceneObject;
+        [SerializeField]
+        private string _name;
 
-		public SelectionHistoryObject(Object selection)
-		{
-			_name = selection.name;
-			_selection = selection;
-			_scenePath = null;
-			_scene = null;
-			_guiContent	= new GUIContent(_name, AssetPreview.GetMiniThumbnail(selection));
-			if (selection is GameObject go && !AssetDatabase.Contains(selection))
-			{
-				_scenePath = GetObjectPath(go);
-				_scene = go.scene.name;
-			}
+        [SerializeField]
+        private GUIContent _guiContent;
 
-			_isSceneObject = _scenePath != null;
-		}
+        [SerializeField]
+        private bool _isSceneObject;
 
-		private static string GetObjectPath(Object obj)
-		{
-			if (obj is GameObject go)
-			{
-				Transform transform = go.transform;
-				var root = transform.root;
-				if (transform == root)
-				{
-					return transform.name;
-				}
-				return $"{root.name}/{AnimationUtility.CalculateTransformPath(transform, root)}";
-			}
+        public SelectionHistoryObject(Object selection)
+        {
+            _name = selection.name;
+            _selection = selection;
+            _scenePath = null;
+            _scene = null;
+            _guiContent = new GUIContent(_name, AssetPreview.GetMiniThumbnail(selection));
+            if (selection is GameObject go && !AssetDatabase.Contains(selection))
+            {
+                _scenePath = GetObjectPath(go);
+                _scene = go.scene.name;
+            }
 
-			return null;
-		}
+            _isSceneObject = _scenePath != null;
+        }
 
-		public SelectionHistoryObject UpdateName()
-		{
-			if (!_isSceneObject || !Exists)
-			{
-				return this;
-			}
+        private static string GetObjectPath(Object obj)
+        {
+            if (obj is GameObject go)
+            {
+                Transform transform = go.transform;
+                var root = transform.root;
+                if (transform == root)
+                {
+                    return transform.name;
+                }
+                return $"{root.name}/{AnimationUtility.CalculateTransformPath(transform, root)}";
+            }
 
-			_name = Selection.name;
-			_scenePath = GetObjectPath(Selection);
-			return this;
-		}
+            return null;
+        }
 
-		public SelectionHistoryObject UpdateSelection(string scene)
-		{
-			if (!_isSceneObject || Exists || scene != _scene)
-			{
-				return this;
-			}
+        public SelectionHistoryObject UpdateName()
+        {
+            if (!_isSceneObject || !Exists)
+            {
+                return this;
+            }
 
-			_selection = GameObject.Find(ScenePath);
-			UpdateName();
-			return this;
-		}
-		
-		public bool Exists => Selection != null;
+            _name = Selection.name;
+            _scenePath = GetObjectPath(Selection);
+            return this;
+        }
 
-		public string Name
-		{
-			get
-			{
-				if (Exists)
-				{
-					return Selection.name;
-				}
+        public SelectionHistoryObject UpdateSelection(string scene)
+        {
+            if (!_isSceneObject || Exists || scene != _scene)
+            {
+                return this;
+            }
 
-				return !string.IsNullOrEmpty(_scene) ? $"[{_scene}] {_name}" : _name;
-			}
-		}
+            _selection = GameObject.Find(ScenePath);
+            UpdateName();
+            return this;
+        }
 
-		public string Scene => _scene ?? string.Empty;
+        public bool Exists => Selection != null;
 
-		public Object Selection => _selection;
+        public string Name
+        {
+            get
+            {
+                if (Exists)
+                {
+                    return Selection.name;
+                }
 
-		public GUIContent GUIContent
-		{
-			get
-			{
-				_guiContent.text = Name;
-				return _guiContent;
-			}
-		}
+                return !string.IsNullOrEmpty(_scene) ? $"[{_scene}] {_name}" : _name;
+            }
+        }
 
-		public bool IsSceneObject => _isSceneObject;
+        public string Scene => _scene ?? string.Empty;
 
-		public string ScenePath => _scenePath;
-	}
+        public Object Selection => _selection;
+
+        public GUIContent GUIContent
+        {
+            get
+            {
+                _guiContent.text = Name;
+                return _guiContent;
+            }
+        }
+
+        public bool IsSceneObject => _isSceneObject;
+
+        public string ScenePath => _scenePath;
+    }
 }
