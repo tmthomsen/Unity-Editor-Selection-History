@@ -1,10 +1,10 @@
 {
-  "name": "com.bedtime.editor-history",
-  "displayName": "Editor History",
-  "description": "View and navigate your selection history",
-  "version": "1.2.1",
+  "name": "com.tmt.editor-selection.history",
+  "displayName": "Editor Selection History",
+  "description": "View and navigate your editor selection history.\nA fork of the 'Editor-History' package from Bedtime Digital Games. \n\nDefault Shortcuts (can be rebound at 'Selection History' in Edit -> Shortcuts) \n- Mouse 3: History Forward \n- Mouse 4: History Backward \n\nOptional Extension \nIf Marijnz's Unity-Toolbar-Extender package (https://github.com/marijnz/unity-toolbar-extender) is present, a 'Selection History' UI button at the upper right corner of the Unity Editor will be present.\n",
+  "version": "1.0.0",
   "author": {
-    "name": "Bedtime Digital Games",
-    "url": "https://git.bedtime.io/unity-packages/com.bedtime.editor-history"
+    "name": "TMT",
+    "url": "https://github.com/tmthomsen/Unity-Editor-Selection-History"
   }
 }

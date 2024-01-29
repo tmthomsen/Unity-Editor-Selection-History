@@ -1,8 +1,8 @@
-namespace BedtimeCore.EditorHistory
+namespace TMT.EditorSelectionHistory
 {
-	internal enum NavigationDirection : ushort
+	internal enum NavigationDirection
 	{
-		Forward = 0x06,
-		Backward = 0x05,
+		Forward,
+		Backward,
 	}
 }

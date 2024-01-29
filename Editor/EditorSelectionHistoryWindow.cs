@@ -1,19 +1,18 @@
-﻿using UnityEngine;
+﻿#if TOOLBAR_EXTENDER_PRESENT
+using UnityEngine;
 using UnityEditor;
 using UnityToolbarExtender;
 
-namespace BedtimeCore.EditorHistory
+namespace TMT.EditorSelectionHistory
 {
-	internal class EditorHistoryWindow : EditorWindow
+	internal class EditorSelectionHistoryWindow : EditorWindow
 	{
 		[SerializeField]
 		private Vector2 _scroll;
 		private bool _clickedHistoryEntry;
 		private bool _isModal;
 		
-		private GUIStyle _scrollbarStyle;
 		private GUIStyle _listStyle;
-		private GUIStyle _navStyle;
 		private GUIContent _popoutButtonContent;
 
 		private const int ENTRY_HEIGHT = 16;
@@ -22,10 +21,35 @@ namespace BedtimeCore.EditorHistory
 		private const string POPOUT_ICON = "d_ScaleTool On";
 		private const string TOOLBAR_BUTTON_TITLE = "Selection History";
 
-		[InitializeOnLoadMethod]
-		static void InitializeOnLoad() => ToolbarExtender.RightToolbarGUI.Add(DrawToolbarButton);
+        private static Rect _toolbarButtonScreenRect;
 
-		private static void DrawToolbarButton()
+        [InitializeOnLoadMethod]
+        static void InitializeOnLoad() => ToolbarExtender.RightToolbarGUI.Add(DrawToolbarButton);
+
+		private void OnEnable()
+        {
+            _listStyle = null;
+            _popoutButtonContent = EditorGUIUtility.TrTextContentWithIcon(string.Empty, "Pop Out", POPOUT_ICON);
+            titleContent = EditorGUIUtility.TrTextContentWithIcon(TOOLBAR_BUTTON_TITLE, TOOLBAR_BUTTON_ICON);
+            EditorSelectionHistory.OnHistoryUpdated += OnHistoryChanged;
+            Selection.selectionChanged += Repaint;
+        }
+
+        private void OnDisable()
+        {
+            EditorSelectionHistory.OnHistoryUpdated -= OnHistoryChanged;
+            Selection.selectionChanged -= Repaint;
+        }
+
+        private void OnGUI()
+        {
+            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+            DrawModalToolbar();
+            DrawList();
+            EditorGUILayout.EndVertical();
+        }
+
+        private static void DrawToolbarButton()
 		{
 			var icon = EditorGUIUtility.IconContent(TOOLBAR_BUTTON_ICON);
 			GUIContent buttonText = new GUIContent(icon.image, TOOLBAR_BUTTON_TITLE);
@@ -34,56 +58,32 @@ namespace BedtimeCore.EditorHistory
 			GUILayout.FlexibleSpace();
 			var rect = GUILayoutUtility.GetRect(buttonText, buttonStyle, GUILayout.Width(32));
 			var clicked = GUI.Button(rect, buttonText, buttonStyle);
-			
-			if(clicked)
-			{
-				ShowModalWindow(GUIUtility.GUIToScreenRect(rect));
-			}
+            _toolbarButtonScreenRect = GUIUtility.GUIToScreenRect(rect);
+
+            if (clicked)
+				ShowModalWindow();
 			
 			GUILayout.Space(TOOLBAR_BUTTON_SPACE);
 		}
 
-		private static void ShowModalWindow(Rect ownerButtonRect)
+		public static void ShowModalWindow()
 		{
-			var window = CreateInstance<EditorHistoryWindow>();
-			var size = new Vector2(200, 300);
-			var pos = ownerButtonRect;
+            var window = CreateInstance<EditorSelectionHistoryWindow>();
+			var size = new Vector2(250, 300);
+			var pos = _toolbarButtonScreenRect;
 			pos.x -= size.x - pos.width - TOOLBAR_BUTTON_SPACE;
 			window._scroll = Vector2.up * int.MaxValue;
 			window._isModal = true;
 			window.ShowAsDropDown(pos, size);
-		}
+        }
 		
 		private void ShowPopoutWindow()
 		{
-			var window = CreateInstance<EditorHistoryWindow>();
+			var window = CreateInstance<EditorSelectionHistoryWindow>();
 			var rect = position;
 			rect.size = rect.size * 1.2f;
 			window.Show();
 			window.position = rect;
-		}
-		
-		private void OnEnable()
-		{
-			_listStyle = null;
-			_popoutButtonContent = EditorGUIUtility.TrTextContentWithIcon(string.Empty, "Pop Out", POPOUT_ICON);
-			titleContent = EditorGUIUtility.TrTextContentWithIcon(TOOLBAR_BUTTON_TITLE, TOOLBAR_BUTTON_ICON);
-			EditorHistory.OnHistoryUpdated += OnHistoryChanged;
-			Selection.selectionChanged += Repaint;
-		}
-
-		private void OnDisable()
-		{
-			EditorHistory.OnHistoryUpdated -= OnHistoryChanged;
-			Selection.selectionChanged -= Repaint;
-		}
-
-		private void OnGUI()
-		{
-			EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-			DrawModalToolbar();
-			DrawList();
-			EditorGUILayout.EndVertical();
 		}
 
 		private void DrawModalToolbar()
@@ -103,7 +103,7 @@ namespace BedtimeCore.EditorHistory
 			EditorGUILayout.EndHorizontal();
 		}
 
-		private void OnHistoryChanged(int location)
+        private void OnHistoryChanged(int location)
 		{
 			if (!_clickedHistoryEntry)
 			{
@@ -119,15 +119,15 @@ namespace BedtimeCore.EditorHistory
 
 			_scroll = GUILayout.BeginScrollView(_scroll, GUIStyle.none, GUI.skin.verticalScrollbar);
 			EditorGUILayout.BeginVertical();
-			for (int i = 0; i < EditorHistory.HistoryObjects.Count; i++)
+			for (int i = 0; i < EditorSelectionHistory.HistoryObjects.Count; i++)
 			{
-				var entry = EditorHistory.HistoryObjects[i];
+				var entry = EditorSelectionHistory.HistoryObjects[i];
 				if (!entry.Exists)
 				{
 					GUI.enabled = false;
 				}
 
-				if (i == EditorHistory.Location)
+				if (i == EditorSelectionHistory.Location)
 				{
 					GUI.backgroundColor = selectedColor;
 				}
@@ -135,7 +135,7 @@ namespace BedtimeCore.EditorHistory
 				if (GUILayout.Button(entry.GUIContent, ListStyle))
 				{
 					_clickedHistoryEntry = true;
-					EditorHistory.SetSelection(i);
+					EditorSelectionHistory.SetSelection(i);
 					_clickedHistoryEntry = false;
 				}
 				GUI.backgroundColor = orgBGColor;
@@ -164,3 +164,4 @@ namespace BedtimeCore.EditorHistory
 		}
 	}
 }
+#endif

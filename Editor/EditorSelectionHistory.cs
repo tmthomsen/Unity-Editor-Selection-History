@@ -1,32 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using UnityEditor;
 using UnityEditor.SceneManagement;
-using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityObject = UnityEngine.Object;
 
-namespace BedtimeCore.EditorHistory
+namespace TMT.EditorSelectionHistory
 {
-	[InitializeOnLoad]
-	internal class EditorHistory
+    [InitializeOnLoad]
+	internal class EditorSelectionHistory
 	{
-		static EditorHistory()
+		static EditorSelectionHistory()
 		{
 			Selection.selectionChanged += OnSelectionChanged;
-			EditorApplication.update += OnUpdate;
 			EditorSceneManager.sceneOpened += OnSceneChanged;
 			EditorSceneManager.sceneSaved += OnSceneSaved;
-			AddObject(Selection.activeObject);
+			AddHistoryObject(Selection.activeObject);
 		}
 
 		public static event Action<int> OnHistoryUpdated;
 
 		public static bool IsNavigating { get; private set; }
 
-		public static List<HistoryObject> HistoryObjects => History.HistoryObjects;
+		public static List<SelectionHistoryObject> HistoryObjects => History.HistoryObjects;
 
 		public static int Location
 		{
@@ -39,7 +36,13 @@ namespace BedtimeCore.EditorHistory
 			}
 		}
 
-		public static void SetSelection(int location, bool setActive = true)
+        private static History History => History.instance;
+
+        private static readonly string _gameViewTypeName = "UnityEditor.GameView";
+        private static bool _selectionWasSet;
+
+
+        public static void SetSelection(int location, bool setActive = true)
 		{
 			EditorWindow focus = EditorWindow.focusedWindow;
 			if (Application.isPlaying && focus != null)
@@ -60,7 +63,7 @@ namespace BedtimeCore.EditorHistory
 			}
 		}
 
-		private static void Navigate(NavigationDirection direction, int amount = 1)
+        public static void Navigate(NavigationDirection direction, int amount = 1)
 		{
 			var totalAmount = amount * (direction == NavigationDirection.Forward ? 1 : -1);
 			if (!IsNavigating)
@@ -88,30 +91,6 @@ namespace BedtimeCore.EditorHistory
 			return location;
 		}
 
-		private static void OnUpdate()
-		{
-			if (!InternalEditorUtility.isApplicationActive)
-			{
-				return;
-			}
-
-			bool forward = GetKey(NavigationDirection.Forward);
-			bool backward = GetKey(NavigationDirection.Backward);
-
-			if (backward && !_navigationLastState[NavigationDirection.Backward])
-			{
-				Navigate(NavigationDirection.Backward);
-			}
-
-			if (forward && !_navigationLastState[NavigationDirection.Forward])
-			{
-				Navigate(NavigationDirection.Forward);
-			}
-
-			_navigationLastState[NavigationDirection.Forward] = forward;
-			_navigationLastState[NavigationDirection.Backward] = backward;
-		}
-
 		private static void ClearInFront()
 		{
 			for (int i = HistoryObjects.Count - 1; i > Location; i--)
@@ -120,7 +99,7 @@ namespace BedtimeCore.EditorHistory
 			}
 		}
 
-		private static void AddObject(UnityObject obj)
+		private static void AddHistoryObject(UnityObject obj)
 		{
 			if (obj == null)
 			{
@@ -128,7 +107,7 @@ namespace BedtimeCore.EditorHistory
 				return;
 			}
 
-			var entry = new HistoryObject(obj);
+			var entry = new SelectionHistoryObject(obj);
 			ClearInFront();
 			if (HistoryObjects.Count > 0 && HistoryObjects[ClampLocation(Location)].Selection == entry.Selection)
 			{
@@ -151,7 +130,7 @@ namespace BedtimeCore.EditorHistory
 				return;
 			}
 
-			AddObject(selection);
+			AddHistoryObject(selection);
 		}
 
 		private static void OnSceneChanged(Scene scene, OpenSceneMode mode)
@@ -169,33 +148,5 @@ namespace BedtimeCore.EditorHistory
 				HistoryObjects[i] =	HistoryObjects[i].UpdateName();
 			}
 		}
-
-		private static History History => History.instance;
-
-		private static readonly string _gameViewTypeName = "UnityEditor.GameView";
-
-		private static bool _selectionWasSet;
-
-		private static readonly Dictionary<NavigationDirection, bool> _navigationLastState = new Dictionary<NavigationDirection, bool>()
-		{
-			{NavigationDirection.Backward, false},
-			{NavigationDirection.Forward, false},
-		};
-
-#if UNITY_EDITOR_WIN
-
-		[DllImport("user32.dll")]
-		private static extern short GetAsyncKeyState(ushort virtualKeyCode);
-
-#endif
-		
-		private static bool GetKey(NavigationDirection direction)
-		{
-#if UNITY_EDITOR_WIN
-			return (GetAsyncKeyState((ushort) direction) & (1 << 16)) != 0;
-#else
-			return false;
-#endif
-		}
-	}
+    }
 }

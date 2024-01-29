@@ -3,10 +3,10 @@ using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace BedtimeCore.EditorHistory
+namespace TMT.EditorSelectionHistory
 {
 	[Serializable]
-	internal struct HistoryObject
+	internal struct SelectionHistoryObject
 	{
 		[SerializeField]
 		private Object _selection;
@@ -26,7 +26,7 @@ namespace BedtimeCore.EditorHistory
 		[SerializeField]
 		private bool _isSceneObject;
 
-		public HistoryObject(Object selection)
+		public SelectionHistoryObject(Object selection)
 		{
 			_name = selection.name;
 			_selection = selection;
@@ -58,7 +58,7 @@ namespace BedtimeCore.EditorHistory
 			return null;
 		}
 
-		public HistoryObject UpdateName()
+		public SelectionHistoryObject UpdateName()
 		{
 			if (!_isSceneObject || !Exists)
 			{
@@ -70,7 +70,7 @@ namespace BedtimeCore.EditorHistory
 			return this;
 		}
 
-		public HistoryObject UpdateSelection(string scene)
+		public SelectionHistoryObject UpdateSelection(string scene)
 		{
 			if (!_isSceneObject || Exists || scene != _scene)
 			{
