@@ -1,4 +1,4 @@
-﻿#if TOOLBAR_EXTENDER_PRESENT
+﻿#if EDITOR_SELECTION_HISTORY_TOOLBAR_EXTENDER_PRESENT
 using UnityEngine;
 using UnityEditor;
 using UnityToolbarExtender;

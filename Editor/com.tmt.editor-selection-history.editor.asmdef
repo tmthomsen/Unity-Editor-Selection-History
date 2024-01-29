@@ -15,7 +15,7 @@
         {
             "name": "com.marijnzwemmer.unity-toolbar-extender",
             "expression": "1.4.2",
-            "define": "TOOLBAR_EXTENDER_PRESENT"
+            "define": "EDITOR_SELECTION_HISTORY_TOOLBAR_EXTENDER_PRESENT"
         }
     ],
     "noEngineReferences": false

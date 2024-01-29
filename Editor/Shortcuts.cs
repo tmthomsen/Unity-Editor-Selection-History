@@ -19,7 +19,7 @@ namespace TMT.EditorSelectionHistory
                 EditorSelectionHistory.Navigate(NavigationDirection.Forward);
         }
 
-#if TOOLBAR_EXTENDER_PRESENT
+#if EDITOR_SELECTION_HISTORY_TOOLBAR_EXTENDER_PRESENT
         [ClutchShortcut("Selection History/Open History Modal")]
         private static void ShowModal(ShortcutArguments args)
         {
