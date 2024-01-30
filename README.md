@@ -1,5 +1,5 @@
-# Editor Selection History
-This is a fork of the excellent [Editor-History](https://github.com/BedtimeDigitalGames/Unity-Editor-History) by Bedtime Digital Games.
+# Unity Editor Selection History
+This is a fork of the excellent [Unity-Editor-History](https://github.com/BedtimeDigitalGames/Unity-Editor-History) by Bedtime Digital Games.
 
 *Navigate between previously selected gameobjects or assets with rebindable shortcuts.*
 
